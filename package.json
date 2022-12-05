@@ -1,0 +1,18 @@
+{
+    "name": "account-service",
+    "version": "1.0.0",
+    "description": "YourYummy account manager service",
+    "license": "UNLICENSED",
+    "type": "module",
+    "private": true,
+    "main": "index.js",
+    "scripts": {
+        "prestart": "npm install --only=prod",
+        "start": "node index.js",
+        "build": "docker build . -t account-service:1.0.0 -t account-service:latest"
+    },
+    "dependencies": {
+        "express": "^4.18.0",
+        "@oas-tools/core": "^3.0.0"
+    }
+}
