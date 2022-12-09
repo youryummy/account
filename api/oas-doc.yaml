@@ -23,12 +23,22 @@ paths:
       responses:
         201:
           description: Logged in successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
         default:
-            description: Unexpected error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/error'
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
   /api/v1/register:
     post:
       description: Creates a new account
@@ -44,7 +54,13 @@ paths:
         required: true
       responses:
         201:
-          description: Account
+          description: Account registered
+        400:
+          description: Bad request
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         default:
             description: Unexpected error
             content:
@@ -160,6 +176,8 @@ components:
             type: string
           password: 
             type: string
+            format: password
+            pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*-_])(?=.{8,})
     account:
         type: object
         required:
@@ -174,21 +192,29 @@ components:
             type: string
           password:
             type: string
+            format: password
+            pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*-_])(?=.{8,})
             writeOnly: true
           fullName:
             type: string
           email:
             type: string
+            format: email
           cellPhone:
             type: string
+            pattern: ^[\+]?[(]?[0-9]{0,3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$
           birthDate:
             type: string
+            format: date
           avatar:
             type: string
+            format: uri
           role:
             type: string
+            enum: [user, admin]
           plan:
             type: string
+            enum: [base, premium]
     error:
       type: object
       required:

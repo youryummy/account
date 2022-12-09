@@ -11,7 +11,7 @@
     },
     "middleware": { 
         "router": { "disable": false, "controllers": "./controllers" },
-        "validator": { "requestValidation": true, "responseValidation": true, "strict": false },
+        "validator": { "requestValidation": true, "responseValidation": true, "strict": true },
         "security": { "disable": true, "auth": null },
         "swagger": { "disable": true, "path": "/docs", "ui": { "customCss": null, "customJs": null } },
         "error": { "disable": false, "printStackTrace": false, "customHandler": null }

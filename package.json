@@ -12,7 +12,10 @@
         "build": "docker build . -t account-service:1.0.0 -t account-service:latest"
     },
     "dependencies": {
+        "@oas-tools/core": "^3.0.0",
+        "bcrypt": "^5.1.0",
         "express": "^4.18.0",
-        "@oas-tools/core": "^3.0.0"
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^6.8.0"
     }
 }
