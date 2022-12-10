@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import server from './server.js';
 
-
 // Node environment
 const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'production';
 
