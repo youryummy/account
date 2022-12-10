@@ -14,13 +14,18 @@ export class OASSwagger extends OASBase {
       const swaggerFile = OASSwagger.#filterPaths(oasFile, config.endpoints);
       return new OASSwagger(config, oasFile, (req, _res, next) => {
         req.swaggerDoc = swaggerFile;
+        req.swaggerDoc.paths = Object.fromEntries(
+          Object.entries(swaggerFile.paths).map(([endp, val]) => {
+            return [endp.replace(/:.+?(?=\/|$)/g, (m) => `{${m.substring(1)}}`), val]
+          })
+        )
         next();
       });  
     }
 
     /* Overridden */
     register(app) {
-      app.get(`${this.#config.path}/swagger.json`, super.getMiddleware(), (req, res) => {console.log(req.swaggerDoc.paths); res.json(req.swaggerDoc)});
+      app.get(`${this.#config.path}/swagger.json`, super.getMiddleware(), (req, res) => res.json(req.swaggerDoc));
       app.use(this.#config.path, super.getMiddleware(), swaggerUI.serve, swaggerUI.setup(null, this.#config.ui));
     }
 

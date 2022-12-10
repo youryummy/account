@@ -110,6 +110,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/account'
+        404:
+          description: Not Found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         default:
           description: Unexpected error
           content:
