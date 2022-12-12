@@ -1,6 +1,8 @@
 ## Environment
 Needed values:
 * global.node_env (default: production)
+* global.jwt_secret
+* global.jwt_issuer
 * mongo_host
 * mongo_port
 * mongo_dbname
