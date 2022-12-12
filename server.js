@@ -12,7 +12,7 @@ const deploy = async (env) => {
     let config = {}
     if (env === "production") {
         config.middleware = { 
-            validator: { disable: true } // Done in gateway
+            validator: { requestValidation: false, responseValidation: false } // Done in gateway
         }
     }
 
