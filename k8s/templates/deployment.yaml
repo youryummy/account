@@ -21,11 +21,11 @@ spec:
           - name: PORT
             value: {{ if eq .Values.global.node_env "production"}}"80"{{ else }}"42000"{{ end }}
           - name: MONGO_HOST
-            value: {{ (index .Values .Chart.Name).mongo_host }}
+            value: {{ (index .Values .Chart.Name).mongo_host | default .Values.mongo_host }}
           - name: MONGO_PORT
-            value: "{{ (index .Values .Chart.Name).mongo_port }}"
+            value: "{{ (index .Values .Chart.Name).mongo_port | default .Values.mongo_port }}"
           - name: MONGO_DBNAME
-            value: {{ (index .Values .Chart.Name).mongo_dbname }}
+            value: {{ (index .Values .Chart.Name).mongo_dbname | default .Values.mongo_dbname }}
           - name: JWT_SECRET
             valueFrom:
               secretKeyRef:
@@ -37,8 +37,8 @@ spec:
                   name: youryummy-{{ .Chart.Name }}-secrets
                   key: JWT_ISSUER
           - name: COOKIE_DOMAIN
-            value: {{ (index .Values .Chart.Name).cookie_domain }} 
-          image: {{ if .Values.image }}{{ .Values.image }}{{ else }}youryummy-accounts-service{{ end }}
+            value: {{ (index .Values .Chart.Name).cookie_domain | default .Values.cookie_domain }} 
+          image: {{ (index .Values .Chart.Name).image | default .Values.image }}
           imagePullPolicy: IfNotPresent
           name: youryummy-{{ .Chart.Name }}
           ports:

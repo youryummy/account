@@ -1,2 +1,4 @@
 global:
   node_env: production
+
+image: youryummy-account-service:latest

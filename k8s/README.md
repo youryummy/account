@@ -8,6 +8,7 @@ Needed values:
 
 Optional values:
 * global.namespaceOverride - Override the default namespace
+* image - Docker image that will run inside the pod (default: "youryummy-account-service:latest")
 
 ## Setup development environment with HELM
 1.- Prerequisites
