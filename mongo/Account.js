@@ -27,7 +27,6 @@ const AccountSchema = new Schema(
         },
         cellPhone: {
             type: String,
-            unique: true,
             validate: {
                 validator: (value) => (/^[\+]?[(]?[0-9]{0,3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im).test(value),
                 message: () => `Invalid phone number`

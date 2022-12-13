@@ -36,12 +36,15 @@ export function login(_req, res) {
 }
 
 export function register(_req, res) {
+    //TODO Create new recipebook
     new Account({...res.locals.oas.body, password: bcrypt.hashSync(res.locals.oas.body.password, 10)}).save()
     .then(() => {
         res.status(201).send();
     }).catch(err => {
         if (err.message?.includes("Account validation failed")) {
             res.status(400).send({ message: `Validation error: ${err.message}` })
+        } else if (err.message?.includes("duplicate key error")) {
+            res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
         } else {
             logger.error(`Error while saving account in db: ${err.message}`);
             res.status(500).send({ message: "Unexpected error ocurred, please try again later" });

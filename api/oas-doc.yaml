@@ -141,8 +141,14 @@ paths:
         description: Account to be updated
         required: true
       responses:
-        '204':
+        204:
           description: Account updated
+        404:
+          description: Not Found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         default:
           description: Unexpected error
           content:
@@ -161,8 +167,14 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        204:
           description: Account deleted
+        404:
+          description: Not Found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         default:
           description: Unexpected error
           content:
