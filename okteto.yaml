@@ -12,7 +12,7 @@ deploy:
     --set account-service.mongo_port=${MONGO_PORT}
     --set account-service.mongo_dbname=${MONGO_DBNAME}
     --set account-service.cookie_domain=${COOKIE_DOMAIN}
-    --set account-service.image=${OKTETO_BUILD_GATEWAY_IMAGE}
+    --set account-service.image=${OKTETO_BUILD_ACCOUNT-SERVICE_IMAGE}
 
 dev:
   gateway:
