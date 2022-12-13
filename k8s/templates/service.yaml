@@ -8,6 +8,8 @@ metadata:
 spec:
   {{- if eq .Values.global.node_env "development" }}
   type: NodePort
+  {{- else }}
+  clusterIP: 10.152.0.3
   {{- end }}
   ports:
     - name: youryummy-{{ .Chart.Name }}
