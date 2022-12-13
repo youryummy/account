@@ -1,5 +1,5 @@
 build:
-  account-service:
+  account:
     context: .
 
 deploy:
@@ -12,10 +12,10 @@ deploy:
     --set account-service.mongo_port=${MONGO_PORT}
     --set account-service.mongo_dbname=${MONGO_DBNAME}
     --set account-service.cookie_domain=${COOKIE_DOMAIN}
-    --set account-service.image=${OKTETO_BUILD_ACCOUNT-SERVICE_IMAGE}
+    --set account-service.image=${OKTETO_BUILD_ACCOUNT_IMAGE}
 
 dev:
-  gateway:
+  account:
     command: ["node", "index.js"]
     sync:
       - .:/opt/app
