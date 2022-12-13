@@ -61,8 +61,11 @@ export async function updateAccount(_req, res) {
 
 export function deleteAccount(req, res) {
     //TODO Delete recipebook
-    res.send({
-        message: 'This is the mockup controller for deleteAccount'
-    });
+    Account.findOneAndDelete({username: res.locals.oas.params.username}).then(() => {
+        res.status(204).send();
+    }).catch((err) => {
+        logger.error(`Error while getting all accounts: ${err.message}`);
+        res.status(500).send({ message: "Unexpected error ocurred, please try again later" });
+    })
 }
 
