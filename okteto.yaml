@@ -1,0 +1,21 @@
+build:
+  account-service:
+    context: .
+
+deploy:
+  - helm upgrade --install account-service k8s
+    --set global.node_env="production"
+    --set global.jwt_secret=${JWT_SECRET}
+    --set global.jwt_issuer=${JWT_ISSUER}
+    --set global.namespaceOverride=${NAMESPACE}
+    --set account-service.mongo_host=${MONGO_HOST}
+    --set account-service.mongo_port=${MONGO_PORT}
+    --set account-service.mongo_dbname=${MONGO_DBNAME}
+    --set account-service.cookie_domain=${COOKIE_DOMAIN}
+    --set account-service.image=${OKTETO_BUILD_GATEWAY_IMAGE}
+
+dev:
+  gateway:
+    command: ["node", "index.js"]
+    sync:
+      - .:/opt/app
