@@ -19,7 +19,7 @@ spec:
       containers:
         - env:
           - name: PORT
-            value: {{ if eq .Values.global.node_env "production"}}"80"{{ else }}"42000"{{ end }}
+            value: "80"
           - name: MONGO_HOST
             value: {{ (index .Values .Chart.Name).mongo_host | default .Values.mongo_host }}
           - name: MONGO_PORT
@@ -42,7 +42,7 @@ spec:
           imagePullPolicy: IfNotPresent
           name: youryummy-{{ .Chart.Name }}
           ports:
-            - containerPort: {{ if eq .Values.global.node_env "production"}}80{{ else }}42000{{ end }}
+            - containerPort: 80
               protocol: TCP
           resources:
             requests:

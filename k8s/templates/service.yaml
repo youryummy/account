@@ -11,9 +11,9 @@ spec:
   {{- end }}
   ports:
     - name: youryummy-{{ .Chart.Name }}
-      port: {{ if eq .Values.global.node_env "production"}}80{{ else }}42000{{ end }}
+      port: 80
       protocol: TCP
-      targetPort: {{ if eq .Values.global.node_env "production"}}80{{ else }}42000{{ end }}
+      targetPort: 80
       {{- if eq .Values.global.node_env "development" }}
       nodePort: 42000
       {{- end }}
