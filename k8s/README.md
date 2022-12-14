@@ -11,6 +11,9 @@ Needed values:
 Optional values:
 * global.namespaceOverride - Override the default namespace
 * image - Docker image that will run inside the pod (default: "youryummy-account-service:latest")
+* mongo_pwd - Mongo database password
+* mongo_user - Mongo database user
+* mongo_proto - Mongo database protocol (default: mongodb)
 
 ## Setup development environment with HELM
 1.- Prerequisites

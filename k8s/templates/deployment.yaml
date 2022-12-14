@@ -26,6 +26,15 @@ spec:
             value: "{{ (index .Values .Chart.Name).mongo_port | default .Values.mongo_port }}"
           - name: MONGO_DBNAME
             value: {{ (index .Values .Chart.Name).mongo_dbname | default .Values.mongo_dbname }}
+          - name: MONGO_USER
+            value: {{ (index .Values .Chart.Name).mongo_user | default .Values.mongo_user }}
+          - name: MONGO_PROTO
+            value: {{ (index .Values .Chart.Name).mongo_proto | default .Values.mongo_proto }}
+          - name: MONGO_PWD
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: MONGO_PWD
           - name: JWT_SECRET
             valueFrom:
               secretKeyRef:

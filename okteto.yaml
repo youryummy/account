@@ -8,8 +8,11 @@ deploy:
     --set global.jwt_secret=${JWT_SECRET}
     --set global.jwt_issuer=${JWT_ISSUER}
     --set global.namespaceOverride=${NAMESPACE}
+    --set account-service.mongo_pwd=${MONGO_PWD}
+    --set account-service.mongo_user=${MONGO_USER}
     --set account-service.mongo_host=${MONGO_HOST}
     --set account-service.mongo_port=${MONGO_PORT}
+    --set account-service.mongo_proto=${MONGO_PROTO}
     --set account-service.mongo_dbname=${MONGO_DBNAME}
     --set account-service.cookie_domain=${COOKIE_DOMAIN}
     --set account-service.image=${OKTETO_BUILD_ACCOUNT_SERVICE_IMAGE}
