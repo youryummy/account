@@ -17,7 +17,7 @@ spec:
       protocol: TCP
       targetPort: 80
       {{- if eq .Values.global.node_env "development" }}
-      nodePort: 42000
+      nodePort: {{ (index .Values .Chart.Name).dev_node_port | default .Values.dev_node_port }}
       {{- end }}
   selector:
     app: youryummy-{{ .Chart.Name }}

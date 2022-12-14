@@ -14,6 +14,7 @@ Optional values:
 * mongo_pwd - Mongo database password
 * mongo_user - Mongo database user
 * mongo_proto - Mongo database protocol (default: mongodb)
+* dev_node_port - (DEV ONLY) Port to which NodePort service will be binded (default: 30100)
 
 ## Setup development environment with HELM
 1.- Prerequisites

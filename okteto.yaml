@@ -4,7 +4,7 @@ build:
 
 deploy:
   - helm upgrade --install account-service k8s
-    --set global.node_env="production"
+    --set global.node_env=${NODE_ENV}
     --set global.jwt_secret=${JWT_SECRET}
     --set global.jwt_issuer=${JWT_ISSUER}
     --set global.namespaceOverride=${NAMESPACE}

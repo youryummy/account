@@ -1,4 +1,5 @@
 global:
   node_env: production
 
+dev_node_port: 30100
 image: youryummy-account-service:latest
