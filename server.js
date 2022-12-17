@@ -1,12 +1,32 @@
 import http from "http";
+import multer from "multer";
 import express from "express";
+import FireBaseStorage from "multer-firebase-storage";
 import { initialize, use } from "@oas-tools/core";
 import { OASSwagger } from "./middleware/oas-swagger.js";
 
 const deploy = async (env) => {
     const serverPort = process.env.PORT ?? 8080;
     const app = express();
+    app.use(multer({
+        storage: FireBaseStorage({
+            public: true,
+            directoryPath: process.env.NODE_ENV ?? "production",
+            bucketName: process.env.FIREBASE_BUCKET,
+            credentials: {
+                clientEmail: process.env.FIREBASE_EMAIL,
+                privateKey: process.env.FIREBASE_KEY,
+                projectId: process.env.FIREBASE_PROJECT_ID
+            }
+        })
+    }).single('Avatar'));
     app.use(express.json({limit: '50mb'}));
+
+    // Parse multipart
+    app.use((req, _res, next) => {
+        if (typeof req.body.AccountInfo === "string") req.body.AccountInfo = JSON.parse(req.body.AccountInfo);
+        next();
+    });
     
     // Feature toggles
     let config = {}

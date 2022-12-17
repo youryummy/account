@@ -47,9 +47,17 @@ paths:
       tags: ["User Access"]
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/account'
+              type: object
+              required:
+                - AccountInfo
+              properties:
+                AccountInfo:
+                  $ref: '#/components/schemas/account'
+                Avatar:
+                  type: string
+                  format: binary
         description: Account to be created
         required: true
       responses:
@@ -135,10 +143,18 @@ paths:
             type: string
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/account'
-        description: Account to be updated
+              type: object
+              required:
+                - AccountInfo
+              properties:
+                AccountInfo:
+                  $ref: '#/components/schemas/account'
+                Avatar:
+                  type: string
+                  format: binary
+        description: Account to be created
         required: true
       responses:
         204:
@@ -227,6 +243,7 @@ components:
           avatar:
             type: string
             format: uri
+            readOnly: true
           role:
             type: string
             enum: [user, admin]

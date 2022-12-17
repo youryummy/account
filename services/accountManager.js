@@ -37,14 +37,18 @@ export function findByusername(_req, res) {
     })
 }
 
-export async function updateAccount(_req, res) {
+export async function updateAccount(req, res) {
     let acc = await Account.findOne({username: res.locals.oas.params?.username}).catch((err) => logger.error(err.message));
     if (acc) {
-        if (res.locals.oas.body.password) res.locals.oas.body.password = bcrypt.hashSync(res.locals.oas.body.password, 10);
-        Object.entries(res.locals.oas.body).forEach(([key, val]) => _.set(acc, key, val));
+        const accountInfo = res.locals.oas.body.AccountInfo;
+        accountInfo.avatar = req.file?.publicUrl ?? accountInfo.avatar;
+        if (accountInfo.password) accountInfo.password = bcrypt.hashSync(accountInfo.password, 10);
+
+        Object.entries(accountInfo).forEach(([key, val]) => _.set(acc, key, val));
         acc.save()
             .then(() => res.status(204).send())
             .catch((err) => {
+                req.file?.fileRef?.delete();
                 if (err.message?.includes("Account validation failed")) {
                     res.status(400).send({ message: `Validation error: ${err.message}` })
                 } else if (err.message?.includes("duplicate key error")) {

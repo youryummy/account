@@ -35,12 +35,16 @@ export function login(_req, res) {
     });
 }
 
-export function register(_req, res) {
+export function register(req, res) {
+    const accountInfo = res.locals.oas.body.AccountInfo;
+
     //TODO Create new recipebook
-    new Account({...res.locals.oas.body, password: bcrypt.hashSync(res.locals.oas.body.password, 10)}).save()
+    accountInfo.avatar = req.file?.publicUrl;
+    new Account({...accountInfo, password: bcrypt.hashSync(accountInfo.password, 10)}).save()
     .then(() => {
         res.status(201).send();
     }).catch(err => {
+        req.file?.fileRef?.delete();
         if (err.message?.includes("Account validation failed")) {
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
