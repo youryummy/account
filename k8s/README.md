@@ -6,6 +6,10 @@ Needed values:
 * mongo_host
 * mongo_port
 * mongo_dbname
+* firebase_key
+* firebase_email
+* firebase_bucket
+* firebase_project_id
 * cookie_domain
 
 Optional values:
@@ -33,6 +37,10 @@ Optional values:
         mongo_port: 27017
         mongo_dbname: test-db
         cookie_domain: localhost
+        firebase_key: <firebase_key>
+        firebase_email: <firebase_email>
+        firebase_bucket: <firebase_bucket>
+        firebase_project_id: <firebase_project_id>
 ```
 
 3.- Create the namespace

@@ -14,5 +14,9 @@ deploy:
     --set account-service.mongo_port=${MONGO_PORT}
     --set account-service.mongo_proto=${MONGO_PROTO}
     --set account-service.mongo_dbname=${MONGO_DBNAME}
+    --set account-service.firebase_key=${FIREBASE_KEY}
+    --set account-service.firebase_email=${FIREBASE_EMAIL}
+    --set account-service.firebase_bucket=${FIREBASE_BUCKET}
+    --set account-service.firebase_project_id=${FIREBASE_PROJECT_ID}
     --set account-service.cookie_domain=${COOKIE_DOMAIN}
     --set account-service.image=${OKTETO_BUILD_ACCOUNT_SERVICE_IMAGE}

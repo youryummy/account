@@ -20,6 +20,8 @@ spec:
         - env:
           - name: PORT
             value: "80"
+          - name: COOKIE_DOMAIN
+            value: {{ (index .Values .Chart.Name).cookie_domain | default .Values.cookie_domain }} 
           - name: MONGO_HOST
             value: {{ (index .Values .Chart.Name).mongo_host | default .Values.mongo_host }}
           - name: MONGO_PORT
@@ -30,23 +32,39 @@ spec:
             value: {{ (index .Values .Chart.Name).mongo_user | default .Values.mongo_user }}
           - name: MONGO_PROTO
             value: {{ (index .Values .Chart.Name).mongo_proto | default .Values.mongo_proto }}
+          {{- if (index .Values .Chart.Name).mongo_pwd}}
           - name: MONGO_PWD
             valueFrom:
               secretKeyRef:
                   name: youryummy-{{ .Chart.Name }}-secrets
                   key: MONGO_PWD
+          {{- end}}
           - name: JWT_SECRET
             valueFrom:
               secretKeyRef:
                   name: youryummy-{{ .Chart.Name }}-secrets
                   key: JWT_SECRET
-          - name: JWT_ISSUER
+          - name: FIREBASE_KEY
             valueFrom:
               secretKeyRef:
                   name: youryummy-{{ .Chart.Name }}-secrets
-                  key: JWT_ISSUER
-          - name: COOKIE_DOMAIN
-            value: {{ (index .Values .Chart.Name).cookie_domain | default .Values.cookie_domain }} 
+                  key: FIREBASE_KEY
+          - name: FIREBASE_EMAIL
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: FIREBASE_EMAIL
+          - name: FIREBASE_BUCKET
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: FIREBASE_BUCKET
+          - name: FIREBASE_PROJECT_ID
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: FIREBASE_PROJECT_ID
+          
           image: {{ (index .Values .Chart.Name).image | default .Values.image }}
           imagePullPolicy: IfNotPresent
           name: youryummy-{{ .Chart.Name }}
