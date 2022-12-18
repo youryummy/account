@@ -44,6 +44,11 @@ spec:
               secretKeyRef:
                   name: youryummy-{{ .Chart.Name }}-secrets
                   key: JWT_SECRET
+          - name: JWT_ISSUER
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: JWT_ISSUER
           - name: FIREBASE_KEY
             valueFrom:
               secretKeyRef:
