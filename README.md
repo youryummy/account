@@ -9,9 +9,7 @@ Required env vars:
 * MONGO_USER: Mongo database user
 * MONGO_PWD: Mongo database password
 * FIREBASE_BUCKET: Bucket where files are stored in firebase
-* FIREBASE_EMAIL: Client email for firebase connection
-* FIREBASE_PROJECT_ID: Firebase project id
-* FIREBASE_KEY: Firebase private PEM key
+* FIREBASE_CREDENTIALS: Base64 encoded service account credentials for firebase.
 * JWT_SECRET: Secret for token encoding
 * JWT_ISSUER: Token issuer
 * COOKIE_DOMAIN: Hosts to where the cookie will be sent

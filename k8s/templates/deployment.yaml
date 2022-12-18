@@ -49,27 +49,14 @@ spec:
               secretKeyRef:
                   name: youryummy-{{ .Chart.Name }}-secrets
                   key: JWT_ISSUER
-          - name: FIREBASE_KEY
+          - name: FIREBASE_CREDENTIALS
             valueFrom:
               secretKeyRef:
                   name: youryummy-{{ .Chart.Name }}-secrets
-                  key: FIREBASE_KEY
-          - name: FIREBASE_EMAIL
-            valueFrom:
-              secretKeyRef:
-                  name: youryummy-{{ .Chart.Name }}-secrets
-                  key: FIREBASE_EMAIL
+                  key: FIREBASE_CREDENTIALS
           - name: FIREBASE_BUCKET
-            valueFrom:
-              secretKeyRef:
-                  name: youryummy-{{ .Chart.Name }}-secrets
-                  key: FIREBASE_BUCKET
-          - name: FIREBASE_PROJECT_ID
-            valueFrom:
-              secretKeyRef:
-                  name: youryummy-{{ .Chart.Name }}-secrets
-                  key: FIREBASE_PROJECT_ID
-          
+            value: {{ (index .Values .Chart.Name).firebase_bucket | default .Values.firebase_bucket }}
+
           image: {{ (index .Values .Chart.Name).image | default .Values.image }}
           imagePullPolicy: IfNotPresent
           name: youryummy-{{ .Chart.Name }}

@@ -6,6 +6,7 @@ import { initialize, use } from "@oas-tools/core";
 import { OASSwagger } from "./middleware/oas-swagger.js";
 
 const deploy = async (env) => {
+    const firebaseCredential = JSON.parse(Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf-8'));
     const serverPort = process.env.PORT ?? 8080;
     const app = express();
     app.use(multer({
@@ -14,9 +15,9 @@ const deploy = async (env) => {
             directoryPath: process.env.NODE_ENV ?? "production",
             bucketName: process.env.FIREBASE_BUCKET,
             credentials: {
-                clientEmail: process.env.FIREBASE_EMAIL,
-                privateKey: process.env.FIREBASE_KEY,
-                projectId: process.env.FIREBASE_PROJECT_ID
+                projectId: firebaseCredential.project_id,
+                privateKey: firebaseCredential.private_key,
+                clientEmail: firebaseCredential.client_email
             }
         })
     }).single('Avatar'));
