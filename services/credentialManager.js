@@ -44,12 +44,13 @@ export function register(req, res) {
     .then(() => {
         res.status(201).send();
     }).catch(err => {
-        req.file?.fileRef?.delete();
         if (err.message?.includes("Account validation failed")) {
+            req.file?.fileRef?.delete();
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
             res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
         } else {
+            req.file?.fileRef?.delete();
             logger.error(`Error while saving account in db: ${err.message}`);
             res.status(500).send({ message: "Unexpected error ocurred, please try again later" });
         }

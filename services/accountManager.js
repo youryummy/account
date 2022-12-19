@@ -1,5 +1,6 @@
 import Account from "../mongo/Account.js";
 import {logger} from "@oas-tools/commons";
+import { fileRef } from "../server.js";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 
@@ -41,19 +42,23 @@ export async function updateAccount(req, res) {
     let acc = await Account.findOne({username: res.locals.oas.params?.username}).catch((err) => logger.error(err.message));
     if (acc) {
         const accountInfo = res.locals.oas.body.AccountInfo;
-        accountInfo.avatar = req.file?.publicUrl ?? accountInfo.avatar;
+        if (req.file?.publicUrl) {
+            fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
+            accountInfo.avatar = req.file?.publicUrl;
+        }
         if (accountInfo.password) accountInfo.password = bcrypt.hashSync(accountInfo.password, 10);
 
         Object.entries(accountInfo).forEach(([key, val]) => _.set(acc, key, val));
         acc.save()
             .then(() => res.status(204).send())
             .catch((err) => {
-                req.file?.fileRef?.delete();
                 if (err.message?.includes("Account validation failed")) {
+                    req.file?.fileRef?.delete();
                     res.status(400).send({ message: `Validation error: ${err.message}` })
                 } else if (err.message?.includes("duplicate key error")) {
                     res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
                 } else {
+                    req.file?.fileRef?.delete();
                     logger.error(`Error while saving account in db: ${err.message}`);
                     res.status(500).send({ message: "Unexpected error ocurred, please try again later" });
                 }
@@ -65,7 +70,8 @@ export async function updateAccount(req, res) {
 
 export function deleteAccount(req, res) {
     //TODO Delete recipebook
-    Account.findOneAndDelete({username: res.locals.oas.params.username}).then(() => {
+    Account.findOneAndDelete({username: res.locals.oas.params.username}).then((acc) => {
+        fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
         res.status(204).send();
     }).catch((err) => {
         logger.error(`Error while getting all accounts: ${err.message}`);

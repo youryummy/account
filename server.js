@@ -5,6 +5,8 @@ import FireBaseStorage from "multer-firebase-storage";
 import { initialize, use } from "@oas-tools/core";
 import { OASSwagger } from "./middleware/oas-swagger.js";
 
+export let fileRef;
+
 const deploy = async (env) => {
     const firebaseCredential = JSON.parse(Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf-8'));
     const serverPort = process.env.PORT ?? 8080;
@@ -18,6 +20,23 @@ const deploy = async (env) => {
                 projectId: firebaseCredential.project_id,
                 privateKey: firebaseCredential.private_key,
                 clientEmail: firebaseCredential.client_email
+            },
+            hooks: {
+                // Modifies the name according to the format <username>-avatar.<extension>
+                beforeUpload (req, file) {
+                    if (typeof req.body.AccountInfo === "string") req.body.AccountInfo = JSON.parse(req.body.AccountInfo);
+                    file.originalname = `${req.body.AccountInfo.username}-avatar.${file.originalname.split(".").at(-1)}`;
+                },
+                // Exports a function to access the files in controllers
+                afterInit (_instance, fb) {
+                    fileRef = (userAcc) => {
+                        if (userAcc?.avatar) {
+                            return fb.storage()
+                                .bucket(process.env.FIREBASE_BUCKET)
+                                .file(`${process.env.NODE_ENV}/${userAcc.username}-avatar.${userAcc.avatar.split(".").at(-1)}`);
+                        }
+                    }
+                }
             }
         })
     }).single('Avatar'));
