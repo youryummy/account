@@ -1,31 +1,20 @@
-import Account from "../mongo/Account.js";
+import { CircuitBreaker } from "../utils/circuitBreaker.js";
+import { signToken } from "../utils/commons.js";
 import {logger} from "@oas-tools/commons";
-import jwt from "jsonwebtoken";
+import Account from "../mongo/Account.js";
 import bcrypt from "bcrypt";
 
-export function login(_req, res) {
+export function login(req, res) {
     const { username, password } = res.locals.oas.body;
-    const secret = process.env.JWT_SECRET ?? "testsecret";
     
-    Account.findOne({username}).then((userAcc) => {
+    CircuitBreaker.getBreaker(Account).fire("findOne", {username}).then((userAcc) => {
         if (bcrypt.compareSync(password, userAcc?.password ?? "")) {
-
-            //TODO Auth: Add ownership params from other services
-            const token = jwt.sign({
+            signToken(req, res, {
                 username: userAcc.username,
                 role: userAcc.role,
                 plan: userAcc.plan
-            }, secret, {
-                issuer: process.env.JWT_ISSUER ?? "youryummy",
-                expiresIn: '24h'
             });
-            
-            const secure = process.env.COOKIE_DOMAIN ? 'Secure;' : ';';
-
-            res.setHeader('Set-Cookie',
-                `authToken=${token}; HttpOnly; ${secure} Max-Age=${60 * 60 * 24}; Path=/; Domain=${process.env.COOKIE_DOMAIN || 'localhost'}`
-            ).status(201).send();
-
+            res.status(201).send();
         } else {
             res.status(400).send({ message: 'Invalid username or password' });
         }
@@ -38,10 +27,16 @@ export function login(_req, res) {
 export function register(req, res) {
     const accountInfo = res.locals.oas.body.AccountInfo;
 
-    //TODO Create new recipebook
-    accountInfo.avatar = req.file?.publicUrl;
-    new Account({...accountInfo, password: bcrypt.hashSync(accountInfo.password, 10), role: "user", plan: "base"}).save()
+    CircuitBreaker.getBreaker(new Account({
+        ...accountInfo,
+        ...(req.file?.publicUrl ? { avatar: req.file?.publicUrl } : {}),
+        password: bcrypt.hashSync(accountInfo.password, 10), 
+        role: "user",
+        plan: "base"
+    }), "saveAccount")
+    .fire("save")
     .then(() => {
+        //TODO Create new recipebook
         res.status(201).send();
     }).catch(err => {
         if (err.message?.includes("Account validation failed")) {
