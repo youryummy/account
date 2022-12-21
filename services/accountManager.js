@@ -1,6 +1,7 @@
 import Account from "../mongo/Account.js";
 import {logger} from "@oas-tools/commons";
 import { fileRef } from "../server.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 
@@ -39,9 +40,13 @@ export function findByusername(_req, res) {
 }
 
 export async function updateAccount(req, res) {
+    const secret = process.env.JWT_SECRET ?? "testsecret";
+
     let acc = await Account.findOne({username: res.locals.oas.params?.username}).catch((err) => logger.error(err.message));
     if (acc) {
         const accountInfo = res.locals.oas.body.AccountInfo;
+        const {username: oldUsername, role: oldRole} = acc;
+
         if (req.file?.publicUrl) {
             fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
             accountInfo.avatar = req.file?.publicUrl;
@@ -50,7 +55,25 @@ export async function updateAccount(req, res) {
 
         Object.entries(accountInfo).forEach(([key, val]) => _.set(acc, key, val));
         acc.save()
-            .then(() => res.status(204).send())
+            .then(() => {
+                // Update token if modified by an user and old username != newUsername
+                if (oldRole === "user" && oldUsername !== accountInfo.username) {
+                    const secure = process.env.COOKIE_DOMAIN ? 'Secure;' : ';';
+                    // TODO add attributes from other services ( create a function to sign the token )
+                    const token = jwt.sign({
+                        username: acc.username,
+                        role: acc.role,
+                        plan: acc.plan
+                    }, secret, {
+                        issuer: process.env.JWT_ISSUER ?? "youryummy",
+                        expiresIn: '24h'
+                    });
+                    res.setHeader('Set-Cookie',
+                        `authToken=${token}; HttpOnly; ${secure} Max-Age=${60 * 60 * 24}; Path=/; Domain=${process.env.COOKIE_DOMAIN || 'localhost'}`
+                    );
+                }
+                res.status(204).send();
+            })
             .catch((err) => {
                 if (err.message?.includes("Account validation failed")) {
                     req.file?.fileRef?.delete();
@@ -68,7 +91,7 @@ export async function updateAccount(req, res) {
     }
 }
 
-export function deleteAccount(req, res) {
+export function deleteAccount(_req, res) {
     //TODO Delete recipebook
     Account.findOneAndDelete({username: res.locals.oas.params.username}).then((acc) => {
         fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));

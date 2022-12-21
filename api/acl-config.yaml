@@ -1,0 +1,12 @@
+user:
+  api/v1/accounts/{username}:
+    "read:own": ["*"]
+    "update:own": ["*"]
+    "delete:own": ["*"]
+admin:
+  api/v1/accounts:
+    "read:any": ["*"]
+  api/v1/accounts/{username}:
+    "read:any": ["*"]
+    "update:any": ["*"]
+    "delete:any": ["*"]

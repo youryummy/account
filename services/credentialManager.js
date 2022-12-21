@@ -40,7 +40,7 @@ export function register(req, res) {
 
     //TODO Create new recipebook
     accountInfo.avatar = req.file?.publicUrl;
-    new Account({...accountInfo, password: bcrypt.hashSync(accountInfo.password, 10)}).save()
+    new Account({...accountInfo, password: bcrypt.hashSync(accountInfo.password, 10), role: "user", plan: "base"}).save()
     .then(() => {
         res.status(201).send();
     }).catch(err => {
