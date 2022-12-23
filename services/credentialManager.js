@@ -1,6 +1,6 @@
 import { CircuitBreaker } from "../utils/circuitBreaker.js";
-import { signToken } from "../utils/commons.js";
 import {logger} from "@oas-tools/commons";
+import commons from "../utils/commons.js";
 import Account from "../mongo/Account.js";
 import bcrypt from "bcrypt";
 
@@ -9,7 +9,7 @@ export function login(req, res) {
     
     CircuitBreaker.getBreaker(Account).fire("findOne", {username}).then((userAcc) => {
         if (bcrypt.compareSync(password, userAcc?.password ?? "")) {
-            signToken(req, res, {
+            commons.signToken(req, res, {
                 username: userAcc.username,
                 role: userAcc.role,
                 plan: userAcc.plan
@@ -35,17 +35,17 @@ export function register(req, res) {
         plan: "base"
     }), "saveAccount")
     .fire("save")
-    .then(() => {
+    .then((acc) => {
         //TODO Create new recipebook
         res.status(201).send();
     }).catch(err => {
         if (err.message?.includes("Account validation failed")) {
-            req.file?.fileRef?.delete();
+            req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));;
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
             res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
         } else {
-            req.file?.fileRef?.delete();
+            req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));;
             logger.error(`Error while saving account in db: ${err.message}`);
             res.status(500).send({ message: "Unexpected error ocurred, please try again later" });
         }

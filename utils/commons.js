@@ -16,3 +16,5 @@ export function signToken(req, res, payload) {
     
     res.setHeader('Set-Cookie', `authToken=${newToken}; HttpOnly; ${secure} Max-Age=${60 * 60 * 24}; Path=/; Domain=${domain}`);
 }
+
+export default { signToken };

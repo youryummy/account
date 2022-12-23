@@ -1,5 +1,5 @@
 import { CircuitBreaker } from "../utils/circuitBreaker.js";
-import { signToken } from "../utils/commons.js";
+import commons from "../utils/commons.js";
 import Account from "../mongo/Account.js";
 import {logger} from "@oas-tools/commons";
 import { fileRef } from "../server.js";
@@ -53,7 +53,7 @@ export function updateAccount(req, res) {
             res.status(404).send({message: `Account with username '${res.locals.oas.params.username}' does not exist`});
         } else {
             fileRef(oldAcc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
-            signToken(req, res, update);           
+            commons.signToken(req, res, update);           
             res.status(204).send();
         }
     }).catch((err) => {

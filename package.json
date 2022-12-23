@@ -9,7 +9,8 @@
     "scripts": {
         "start": "node index.js",
         "dev": "node -r dotenv/config index.js",
-        "build": "docker build . -t account-service:1.0.0 -t account-service:latest"
+        "build": "docker build . -t account-service:1.0.0 -t account-service:latest",
+        "test:unit": "mocha --exit --recursive --timeout 5000 -r tests/setup.test.js tests/unit"
     },
     "dependencies": {
         "@oas-tools/core": "^3.0.0",
@@ -23,6 +24,8 @@
         "opossum": "^7.0.1"
     },
     "devDependencies": {
-        "dotenv": "^16.0.3"
+        "dotenv": "^16.0.3",
+        "mocha": "^10.2.0",
+        "sinon": "^15.0.1"
     }
 }
