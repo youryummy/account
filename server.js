@@ -5,7 +5,7 @@ import FireBaseStorage from "multer-firebase-storage";
 import { initialize, use } from "@oas-tools/core";
 import { OASSwagger } from "./middleware/oas-swagger.js";
 
-export let fileRef;
+let fileRef = () => {};
 
 const deploy = async (env) => {
     const firebaseCredential = JSON.parse(Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf-8'));
@@ -76,5 +76,5 @@ const undeploy = () => {
   process.exit();
 };
 
-export default {deploy, undeploy}
+export default {deploy, undeploy, fileRef}
 

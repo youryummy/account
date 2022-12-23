@@ -2,7 +2,7 @@ import { CircuitBreaker } from "../utils/circuitBreaker.js";
 import commons from "../utils/commons.js";
 import Account from "../mongo/Account.js";
 import {logger} from "@oas-tools/commons";
-import { fileRef } from "../server.js";
+import serverExports from "../server.js";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 
@@ -52,7 +52,7 @@ export function updateAccount(req, res) {
         if (!oldAcc) {
             res.status(404).send({message: `Account with username '${res.locals.oas.params.username}' does not exist`});
         } else {
-            fileRef(oldAcc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
+            serverExports.fileRef(oldAcc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
             commons.signToken(req, res, update);           
             res.status(204).send();
         }
@@ -73,7 +73,7 @@ export function updateAccount(req, res) {
 export function deleteAccount(_req, res) {
     CircuitBreaker.getBreaker(Account).fire("findOneAndDelete", {username: res.locals.oas.params.username}).then((acc) => {
         //TODO Delete recipebook
-        fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
+        serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
         res.status(204).send();
     }).catch((err) => {
         logger.error(`Error while getting all accounts: ${err.message}`);

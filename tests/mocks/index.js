@@ -1,10 +1,12 @@
+import serverExports from "../../server.js";
 import commons from "../../utils/commons.js";
 import { CircuitBreaker } from "../../utils/circuitBreaker.js";
 import { stub } from 'sinon';
 
 export default {
     circuitBreaker,
-    signToken
+    signToken,
+    fileRef
 }
 
 function circuitBreaker(throwException = false, reason) {
@@ -17,4 +19,8 @@ function circuitBreaker(throwException = false, reason) {
 
 function signToken() {
     return stub(commons, "signToken").returns();
+}
+
+function fileRef() {
+    return stub(serverExports, "fileRef").returns();
 }
