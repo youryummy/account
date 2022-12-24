@@ -2,11 +2,14 @@ import serverExports from "../../server.js";
 import commons from "../../utils/commons.js";
 import { CircuitBreaker } from "../../utils/circuitBreaker.js";
 import { stub } from 'sinon';
+import jwt from "jsonwebtoken";
 
 export default {
     circuitBreaker,
     signToken,
-    fileRef
+    jwtSign,
+    jwtDecode,
+    fileRef,
 }
 
 function circuitBreaker(throwException = false, reason) {
@@ -23,4 +26,12 @@ function signToken() {
 
 function fileRef() {
     return stub(serverExports, "fileRef").returns();
+}
+
+function jwtSign(token) {
+    return stub(jwt, "sign").returns(token);
+}
+
+function jwtDecode(payload) {
+    return stub(jwt, "decode").returns(payload);
 }
