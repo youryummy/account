@@ -15,7 +15,7 @@ export class CircuitBreaker extends OpossumCircuitBreaker {
         super((fname, ...args) => object[fname](...args), opts ?? defaults);
     }
 
-    static getBreaker(object, res, {nameOverride, onlyOpenOnInternalError, ...opts}) {
+    static getBreaker(object, res, {nameOverride, onlyOpenOnInternalError, ...opts} = {}) {
         let name = nameOverride ?? (object.constructor.name);
         if (!breakers[name]) {
             breakers[name] = new CircuitBreaker(object, {...opts});

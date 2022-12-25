@@ -14,7 +14,7 @@ export default () => {
     describe("CircuitBreaker tests", () => {
         beforeEach(() => {
             breaker = CircuitBreaker.getBreaker(SUTClass);
-            breakerNameOverride = CircuitBreaker.getBreaker(SUTClass, "SUTClassOverride");
+            breakerNameOverride = CircuitBreaker.getBreaker(SUTClass, null, { nameOverride: "test" });
         });
 
         it("Should execute async function correctly", async () => {
