@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import _ from "lodash";
 
 export function getAccounts(_req, res) {
-    CircuitBreaker.getBreaker(Account).fire("find", {}).then((results) => {
+    CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true}).fire("find", {}).then((results) => {
         res.send(results.map(acc => 
             _.set(
                 _.pick(acc, ['username', 'fullName', 'email', 'cellPhone', 'birthDate', 'avatar', 'role', 'plan']),
@@ -22,7 +22,8 @@ export function getAccounts(_req, res) {
 }
 
 export function findByusername(_req, res) {
-    CircuitBreaker.getBreaker(Account).fire("findOne", {username: res.locals.oas.params.username}).then((acc) => {
+    CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
+    .fire("findOne", {username: res.locals.oas.params.username}).then((acc) => {
         if (acc) {
             res.send(
                 _.set(
@@ -47,7 +48,8 @@ export function updateAccount(req, res) {
         ...(res.locals.oas.body.AccountInfo.password ? { password: bcrypt.hashSync(res.locals.oas.body.AccountInfo.password, 10) } : {})
     };
 
-    CircuitBreaker.getBreaker(Account).fire("findOneAndUpdate", {username: res.locals.oas.params?.username}, update)
+    CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
+    .fire("findOneAndUpdate", {username: res.locals.oas.params?.username}, update, {runValidators: true})
     .then((oldAcc) => {
         if (!oldAcc) {
             res.status(404).send({message: `Account with username '${res.locals.oas.params.username}' does not exist`});
@@ -57,7 +59,7 @@ export function updateAccount(req, res) {
             res.status(204).send();
         }
     }).catch((err) => {
-        if (err.message?.includes("Account validation failed")) {
+        if (err.message?.toLowerCase().includes("validation failed")) {
             req.file?.fileRef?.delete();
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
@@ -71,7 +73,8 @@ export function updateAccount(req, res) {
 }
 
 export function deleteAccount(_req, res) {
-    CircuitBreaker.getBreaker(Account).fire("findOneAndDelete", {username: res.locals.oas.params.username}).then((acc) => {
+    CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
+    .fire("findOneAndDelete", {username: res.locals.oas.params.username}).then((acc) => {
         //TODO Delete recipebook
         serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
         res.status(204).send();

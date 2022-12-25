@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 export function login(req, res) {
     const { username, password } = res.locals.oas.body;
     
-    CircuitBreaker.getBreaker(Account).fire("findOne", {username}).then((userAcc) => {
+    CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true}).fire("findOne", {username}).then((userAcc) => {
         if (bcrypt.compareSync(password, userAcc?.password ?? "")) {
             commons.signToken(req, res, {
                 username: userAcc.username,
@@ -26,20 +26,20 @@ export function login(req, res) {
 
 export function register(req, res) {
     const accountInfo = res.locals.oas.body.AccountInfo;
-
-    CircuitBreaker.getBreaker(new Account({
+    
+    CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
+    .fire("create", {
         ...accountInfo,
         ...(req.file?.publicUrl ? { avatar: req.file?.publicUrl } : {}),
         password: bcrypt.hashSync(accountInfo.password, 10), 
         role: "user",
         plan: "base"
-    }), "saveAccount")
-    .fire("save")
+    })
     .then((acc) => {
         //TODO Create new recipebook
         res.status(201).send();
     }).catch(err => {
-        if (err.message?.includes("Account validation failed")) {
+        if (err.message?.toLowerCase().includes("validation failed")) {
             req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));;
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
