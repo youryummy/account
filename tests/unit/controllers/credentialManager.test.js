@@ -83,7 +83,7 @@ describe("Credential manager tests", () => {
         const fixture = (requestBody, dbSavedDoc, throwException, reason) => {
             res.locals.oas.body = requestBody;
             req.file = requestBody.Avatar ? { publicUrl: "http://someUrl.com"} : null;
-            breaker = mocks.circuitBreaker(throwException, reason).fire("save", dbSavedDoc);
+            breaker = mocks.circuitBreaker(throwException, reason).fire("create", dbSavedDoc);
         }
 
         beforeEach(() => {

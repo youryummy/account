@@ -45,8 +45,8 @@ export function register(req, res) {
         } else if (err.message?.includes("duplicate key error")) {
             Account.findOne({username: accountInfo.username}).then((dupeAcc) => {
                 if (!dupeAcc.avatar) req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
-                res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
             });
+            res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
         } else {
             req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));;
             logger.error(`Error while saving account in db: ${err.message}`);
