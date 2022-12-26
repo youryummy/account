@@ -21,14 +21,14 @@ const AccountSchema = new Schema(
             required: true,
             trim: true,
             validate: {
-                validator: (value) => /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(value),
+                validator: (value) => (/^([\w-.]+@([\w-]+\.)+[\w-]{2,4})?$/).test(value),
                 message: () => `Invalid email address`
             }
         },
         cellPhone: {
             type: String,
             validate: {
-                validator: (value) => (/^[\+]?[(]?[0-9]{0,3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im).test(value),
+                validator: (value) => (/^[+]?[(]?[0-9]{0,3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im).test(value),
                 message: () => `Invalid phone number`
             }
         },

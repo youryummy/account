@@ -5,7 +5,7 @@ import FireBaseStorage from "multer-firebase-storage";
 import { initialize, use } from "@oas-tools/core";
 import { OASSwagger } from "./middleware/oas-swagger.js";
 
-let fileRef = () => {};
+const fileRef = () => {};
 
 const deploy = async (env) => {
     const firebaseCredential = JSON.parse(Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf-8'));
@@ -49,28 +49,29 @@ const deploy = async (env) => {
     });
     
     // Feature toggles
-    let config = {}
+    const config = {}
     if (env === "production") {
         config.middleware = { 
             validator: { requestValidation: false, responseValidation: false } // Done in gateway
         }
     } else if (env === "test") {
         config.middleware = { validator: { strict: true }}
-        config.logger = {level : "off"};
+        config.logger = {level: "off"};
     }
 
     // Initialize OAS Tools
     use(OASSwagger, {path: "/docs"});
     initialize(app, config).then(() => {
         http.createServer(app).listen(serverPort, () => {
-        if (env !== "test") {
-            console.log("\nApp running at http://localhost:" + serverPort);
-            console.log("________________________________________________________________");
-            if (config?.middleware?.swagger?.disable !== false) {
-                console.log('API docs (Swagger UI) available on http://localhost:' + serverPort + '/docs');
+            if (env !== "test") {
+                console.log("\nApp running at http://localhost:" + serverPort);
                 console.log("________________________________________________________________");
-            }
-        }});
+                if (config?.middleware?.swagger?.disable !== false) {
+                    console.log('API docs (Swagger UI) available on http://localhost:' + serverPort + '/docs');
+                    console.log("________________________________________________________________");
+                }
+            } 
+        });
     });
 }
 
@@ -78,6 +79,6 @@ const undeploy = () => {
   process.exit();
 };
 
-let module = {deploy, undeploy, fileRef}
+const module = {deploy, undeploy, fileRef}
 export default module;
 

@@ -16,7 +16,7 @@ export class CircuitBreaker extends OpossumCircuitBreaker {
     }
 
     static getBreaker(object, res, {nameOverride, onlyOpenOnInternalError, ...opts} = {}) {
-        let name = nameOverride ?? (object.constructor.name);
+        const name = nameOverride ?? object.constructor.name;
         if (!breakers[name]) {
             breakers[name] = new CircuitBreaker(object, {...opts});
             if (onlyOpenOnInternalError) {
@@ -28,12 +28,12 @@ export class CircuitBreaker extends OpossumCircuitBreaker {
                     }
                 })
             }
-        };
+        }
         return breakers[name];
     }
 
     static resetAll() {
-        for (let name in breakers) {
+        for (const name in breakers) {
             delete breakers[name];
         }
     }

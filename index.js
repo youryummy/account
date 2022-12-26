@@ -20,17 +20,19 @@ const mongoURL = `${mongoProto}://` +
 
 mongoose.set('strictQuery', false);
 mongoose.connect(mongoURL).then(() => {
-  server.deploy(env).catch(err => { console.log(err); });
+  server.deploy(env).catch((err) => {
+    console.log(err); 
+  });
 });
 
 // quit on ctrl-c when running docker in terminal
-process.on('SIGINT', function onSigint () {
+process.on('SIGINT', () => {
   console.log(`[${new Date().toISOString()}] Got SIGINT (aka ctrl-c in docker). Graceful shutdown`);
   shutdown();
 });
 
 // quit properly on docker stop
-process.on('SIGTERM', function onSigterm () {
+process.on('SIGTERM', () => {
   console.log(`[${new Date().toISOString()}] Got SIGTERM (docker container stop). Graceful shutdown`);
   shutdown();
 });

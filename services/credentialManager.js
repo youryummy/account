@@ -30,25 +30,25 @@ export function register(req, res) {
     CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
     .fire("create", {
         ...accountInfo,
-        ...(req.file?.publicUrl ? { avatar: req.file?.publicUrl } : {}),
+        ...req.file?.publicUrl ? { avatar: req.file?.publicUrl } : {},
         password: bcrypt.hashSync(accountInfo.password, 10), 
         role: "user",
         plan: "base"
     })
-    .then((acc) => {
+    .then((_acc) => {
         //TODO Create new recipebook
         res.status(201).send();
-    }).catch(err => {
+    }).catch((err) => {
         if (err.message?.toLowerCase().includes("validation failed")) {
-            req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));;
+            req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
             Account.findOne({username: accountInfo.username}).then((dupeAcc) => {
                 if (!dupeAcc.avatar) req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
             });
-            res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
+            res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map((s) => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
         } else {
-            req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));;
+            req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
             logger.error(`Error while saving account in db: ${err.message}`);
             res.status(500).send({ message: "Unexpected error ocurred, please try again later" });
         }

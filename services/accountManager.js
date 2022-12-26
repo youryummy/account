@@ -8,7 +8,7 @@ import _ from "lodash";
 
 export function getAccounts(_req, res) {
     CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true}).fire("find", {}).then((results) => {
-        res.send(results.map(acc => 
+        res.send(results.map((acc) => 
             _.set(
                 _.pick(acc, ['username', 'fullName', 'email', 'cellPhone', 'birthDate', 'avatar', 'role', 'plan']),
                 'birthDate',
@@ -44,8 +44,8 @@ export function findByusername(_req, res) {
 export function updateAccount(req, res) {
     const update = {
         ...res.locals.oas.body.AccountInfo,
-        ...(req.file?.publicUrl ? { avatar: req.file.publicUrl } : {}),
-        ...(res.locals.oas.body.AccountInfo.password ? { password: bcrypt.hashSync(res.locals.oas.body.AccountInfo.password, 10) } : {})
+        ...req.file?.publicUrl ? { avatar: req.file.publicUrl } : {},
+        ...res.locals.oas.body.AccountInfo.password ? { password: bcrypt.hashSync(res.locals.oas.body.AccountInfo.password, 10) } : {}
     };
 
     CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
@@ -63,7 +63,7 @@ export function updateAccount(req, res) {
             req.file?.fileRef?.delete();
             res.status(400).send({ message: `Validation error: ${err.message}` })
         } else if (err.message?.includes("duplicate key error")) {
-            res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map(s => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
+            res.status(400).send({ message: `${err.message?.match(/\{.*\}/gm).map((s) => s.replace(/"/g, "'").replace(/{|}/g, "")).join(',').trim()} is duplicated, must be unique` })
         } else {
             req.file?.fileRef?.delete();
             logger.error(`Error while saving account in db: ${err.message}`);
