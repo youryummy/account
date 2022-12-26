@@ -1,5 +1,7 @@
 # Account Service
 
+[![Coverage Status](https://coveralls.io/repos/github/youryummy/account/badge.svg?branch=main)](https://coveralls.io/github/youryummy/account?branch=main)
+
 Required env vars:
 * PORT: ExpressJS application port (default: 8080)
 * MONGO_PROTO: Mongo database protocol (default: mongodb)

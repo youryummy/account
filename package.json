@@ -1,6 +1,5 @@
 {
     "name": "account-service",
-    "version": "1.0.0",
     "description": "YourYummy account manager service",
     "license": "UNLICENSED",
     "type": "module",
@@ -15,7 +14,7 @@
         "test:component": "mocha --exit --recursive --timeout 5000 -r tests/setup.test.js tests/component",
         "test": "npm run test:unit && npm run test:integration && npm run test:component",
         "cov": "c8 --reporter=lcov --reporter=text npm run test",
-        "lint": "eslint ./ --ignore-pattern tests/**",
+        "lint": "eslint ./ --ignore-pattern \"tests/**\"",
         "format": "npm run lint -- --fix"
     },
     "dependencies": {
