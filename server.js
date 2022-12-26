@@ -29,7 +29,7 @@ const deploy = async (env) => {
                 },
                 // Exports a function to access the files in controllers
                 afterInit (_instance, fb) {
-                    fileRef = (userAcc) => {
+                    module.fileRef = (userAcc) => {
                         if (userAcc?.avatar) {
                             return fb.storage()
                                 .bucket(process.env.FIREBASE_BUCKET)
@@ -55,20 +55,22 @@ const deploy = async (env) => {
             validator: { requestValidation: false, responseValidation: false } // Done in gateway
         }
     } else if (env === "test") {
-        logger.level = "off";
+        config.middleware = { validator: { strict: true }}
+        config.logger = {level : "off"};
     }
 
     // Initialize OAS Tools
     use(OASSwagger, {path: "/docs"});
     initialize(app, config).then(() => {
         http.createServer(app).listen(serverPort, () => {
-        console.log("\nApp running at http://localhost:" + serverPort);
-        console.log("________________________________________________________________");
-        if (config?.middleware?.swagger?.disable !== false) {
-            console.log('API docs (Swagger UI) available on http://localhost:' + serverPort + '/docs');
+        if (env !== "test") {
+            console.log("\nApp running at http://localhost:" + serverPort);
             console.log("________________________________________________________________");
-        }
-        });
+            if (config?.middleware?.swagger?.disable !== false) {
+                console.log('API docs (Swagger UI) available on http://localhost:' + serverPort + '/docs');
+                console.log("________________________________________________________________");
+            }
+        }});
     });
 }
 
@@ -76,5 +78,6 @@ const undeploy = () => {
   process.exit();
 };
 
-export default {deploy, undeploy, fileRef}
+let module = {deploy, undeploy, fileRef}
+export default module;
 
