@@ -1,6 +1,6 @@
 user:
   api/v1/accounts/{username}:
-    "read:own": ["*"]
+    "read:any": ["*"]
     "update:own": ["*"]
     "delete:own": ["*"]
 admin:

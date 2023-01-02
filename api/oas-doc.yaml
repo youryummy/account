@@ -54,7 +54,10 @@ paths:
                 - AccountInfo
               properties:
                 AccountInfo:
-                  $ref: '#/components/schemas/account'
+                  allOf:
+                    - $ref: '#/components/schemas/credentials'
+                    - required:
+                      - password
                 Avatar:
                   type: string
                   format: binary
@@ -224,7 +227,6 @@ components:
         type: object
         required:
           - username
-          - password
           - fullName
           - email
         properties:

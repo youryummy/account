@@ -112,7 +112,7 @@ describe("Component testing", () => {
         it("REGISTER sould return 400 when invalid password provided", (done) => {
             const expectation = {code: 400, body: true};
             const opts = {
-                aggFunction: (data) => data.error?.includes("Validation failed at #/properties/AccountInfo/properties/password/pattern"),
+                aggFunction: (data) => data.error?.includes("Validation failed at #/properties/AccountInfo/allOf/0/properties/password/pattern"),
                 method: "post",
                 formData: {
                     AccountInfo: JSON.stringify({
