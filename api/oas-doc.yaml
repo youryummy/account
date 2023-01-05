@@ -222,7 +222,6 @@ components:
           password: 
             type: string
             format: password
-            pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*-_])(?=.{8,})
     account:
         type: object
         required:
