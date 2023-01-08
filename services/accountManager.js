@@ -4,6 +4,7 @@ import Account from "../mongo/Account.js";
 import {logger} from "@oas-tools/commons";
 import serverExports from "../server.js";
 import bcrypt from "bcrypt";
+import axios from "axios";
 import _ from "lodash";
 
 export function getAccounts(_req, res) {
@@ -75,9 +76,24 @@ export function updateAccount(req, res) {
 export function deleteAccount(_req, res) {
     CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
     .fire("findOneAndDelete", {username: res.locals.oas.params.username}).then((acc) => {
-        //TODO Delete recipebook
-        serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
-        res.status(204).send();
+        if (acc) {
+            CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true})
+            .fire("get", `http://youryummy-recipesbook-service/api/v1/recipesbooks/findByUserId/${res.locals.oas.params.username}`)
+            .then((rbresponse) => {
+                Promise.all(rbresponse.data?.map((book) => {
+                    CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("delete", `http://youryummy-recipesbook-service/api/v1/recipesbooks/${book._id}`)
+                }) ?? []).then(() => {
+                    serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
+                    res.status(204).send();
+                }).catch((err) => {
+                    res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message ?? "Unexpected error ocurred, please try again later" });
+                });
+            }).catch((err) => {
+                res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message ?? "Unexpected error ocurred, please try again later" });
+            });
+        } else {
+            res.status(204).send();
+        }
     }).catch((err) => {
         logger.error(`Error while getting all accounts: ${err.message}`);
         res.status(500).send({ message: "Unexpected error ocurred, please try again later" });

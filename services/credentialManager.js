@@ -3,6 +3,7 @@ import {logger} from "@oas-tools/commons";
 import commons from "../utils/commons.js";
 import Account from "../mongo/Account.js";
 import bcrypt from "bcrypt";
+import axios from "axios";
 
 export function login(req, res) {
     const { username, password } = res.locals.oas.body;
@@ -35,9 +36,19 @@ export function register(req, res) {
         role: "user",
         plan: "base"
     })
-    .then((_acc) => {
-        //TODO Create new recipebook
-        res.status(201).send();
+    .then((acc) => {
+        CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true})
+        .fire("post", 'http://youryummy-recipesbook-service/api/v1/recipesbooks', {
+            idUser: acc.username,
+            name: "My recipes",
+            summary: "My recipe book",
+            recipesList: []
+        })
+        .then(() => {
+            res.status(201).send();
+        }).catch((err) => {
+            res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message ?? "Unexpected error ocurred, please try again later" });
+        });
     }).catch((err) => {
         if (err.message?.toLowerCase().includes("validation failed")) {
             req.file?.fileRef?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));

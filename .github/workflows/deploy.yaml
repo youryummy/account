@@ -36,8 +36,17 @@ jobs:
           node-version: 16.x
       - name: Install dependencies
         run: npm ci
-      - name: Run mongo docker
-        run: docker run -d -p 27017:27017 --name mongo mongo:latest
+      - name: Add hosts to /etc/hosts
+        run: |
+          echo "127.0.0.1 youryummy-recipesbook-service" >> /etc/hosts
+          echo "127.0.0.1 recipes >> /etc/hosts"
+          echo "127.0.0.1 recommendations >> /etc/hosts"
+          echo "127.0.0.1 planner >> /etc/hosts"
+          echo "127.0.0.1 youryummy-ratings-service >> /etc/hosts"
+          echo "127.0.0.1 youryummy-ingredients-service >> /etc/hosts"
+
+      - name: Run docker compose
+        run: docker-compose -f "./.github/docker-compose.yaml" up -d --build
       - name: Create env file
         run: echo "${{ secrets.TEST_ENV }}" > .env.test
       - name: Run coverage
