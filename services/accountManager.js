@@ -81,7 +81,7 @@ export function deleteAccount(_req, res) {
             .fire("get", `http://youryummy-recipesbook-service/api/v1/recipesbooks/findByUserId/${res.locals.oas.params.username}`)
             .then((rbresponse) => {
                 Promise.all(rbresponse.data?.map((book) => {
-                    CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("delete", `http://youryummy-recipesbook-service/api/v1/recipesbooks/${book._id}`)
+                    return CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("delete", `http://youryummy-recipesbook-service/api/v1/recipesbooks/${book._id}`)
                 }) ?? []).then(() => {
                     serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
                     res.status(204).send();

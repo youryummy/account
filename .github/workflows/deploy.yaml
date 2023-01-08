@@ -38,12 +38,12 @@ jobs:
         run: npm ci
       - name: Add hosts to /etc/hosts
         run: |
-          echo "127.0.0.1 youryummy-recipesbook-service" >> /etc/hosts
-          echo "127.0.0.1 recipes >> /etc/hosts"
-          echo "127.0.0.1 recommendations >> /etc/hosts"
-          echo "127.0.0.1 planner >> /etc/hosts"
-          echo "127.0.0.1 youryummy-ratings-service >> /etc/hosts"
-          echo "127.0.0.1 youryummy-ingredients-service >> /etc/hosts"
+          sudo echo "127.0.0.1 youryummy-recipesbook-service" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1 recipes | sudo tee -a /etc/hosts"
+          sudo echo "127.0.0.1 recommendations | sudo tee -a /etc/hosts"
+          sudo echo "127.0.0.1 planner | sudo tee -a /etc/hosts"
+          sudo echo "127.0.0.1 youryummy-ratings-service | sudo tee -a /etc/hosts"
+          sudo echo "127.0.0.1 youryummy-ingredients-service | sudo tee -a /etc/hosts"
 
       - name: Run docker compose
         run: docker-compose -f "./.github/docker-compose.yaml" up -d --build
