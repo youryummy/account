@@ -5,7 +5,7 @@ import mocks from '../../mocks/index.js';
 export default () => {
     const res = { headers: {} }, req = { headers: {}};
     describe("JWT token signtature tests", () => {
-        const payload = { username: "test", plan: "test", role: "test" };
+        const payload = { username: "test", plan: "test", role: "test", userId: "test" };
         const token = "EncodedtokenDependingOnThePayload";
         const secret = "testsecret";
         const issuer = "youryummy";
@@ -24,31 +24,35 @@ export default () => {
             delete process.env.JWT_ISSUER;
         });
 
-        it("Should sign the token and write Set-Cookie header", () => {
+        it("Should sign the token and write Set-Cookie header", (done) => {
             let signMock = mocks.jwtSign(token, payload);
             
-            signToken(req, res, payload);
+            signToken(req, res, payload).then(() => {
+                assert.equal(signMock.calledWith({...payload, ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: [], eventIds: [] }, secret, {issuer, expiresIn: '24h'}), true);
+                assert.deepStrictEqual(res.headers, { 'Set-Cookie': `authToken=${token}; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost` });
+                done();
+            }).catch(err => done(err))
+            .finally(() => signMock.restore());
             
-            assert.equal(signMock.calledWith(payload, secret, {issuer, expiresIn: '24h'}), true);
-            assert.deepStrictEqual(res.headers, { 'Set-Cookie': `authToken=${token}; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost` });
-
-            signMock.restore();
         });
 
-        it("Should update the token in case that a previous one existed", () => {
+        it("Should update the token in case that a previous one existed", (done) => {
             const updatedPayload = { username: "updatedUser", plan: "updatedPlan", role: "updatedRole" }
             req.headers.cookie = `tokenString`; // Decode function is mocked, no need to specify full string
 
             let decodeMock = mocks.jwtDecode(payload);
             let signMock = mocks.jwtSign("newToken");
 
-            signToken(req, res, updatedPayload);
+            signToken(req, res, updatedPayload).then(() => {
+                assert.equal(signMock.calledWith({...updatedPayload, userId: "updatedUser", ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: [], eventIds: [] }, secret, {issuer, expiresIn: '24h'}), true);
+                assert.deepStrictEqual(res.headers, { 'Set-Cookie': 'authToken=newToken; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost' });
+                done();
+            }).catch(err => done(err))
+            .finally(() => {
+                signMock.restore();
+                decodeMock.restore();
+            });
             
-            assert.equal(signMock.calledWith(updatedPayload, secret, {issuer, expiresIn: '24h'}), true);
-            assert.deepStrictEqual(res.headers, { 'Set-Cookie': 'authToken=newToken; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost' });
-
-            signMock.restore();
-            decodeMock.restore();
         });
     });
 }

@@ -14,8 +14,9 @@ export function login(req, res) {
                 username: userAcc.username,
                 role: userAcc.role,
                 plan: userAcc.plan
+            }).then(() => {
+                res.status(201).send();
             });
-            res.status(201).send();
         } else {
             res.status(400).send({ message: 'Invalid username or password' });
         }

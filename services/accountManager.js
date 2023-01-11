@@ -56,8 +56,7 @@ export function updateAccount(req, res) {
             res.status(404).send({message: `Account with username '${res.locals.oas.params.username}' does not exist`});
         } else {
             serverExports.fileRef(oldAcc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
-            commons.signToken(req, res, update);           
-            res.status(204).send();
+            commons.signToken(req, res, update).then(() => res.status(204).send());           
         }
     }).catch((err) => {
         if (err.message?.toLowerCase().includes("validation failed")) {

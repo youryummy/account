@@ -21,7 +21,7 @@ function circuitBreaker(throwException = false, reason) {
     }
 
 function signToken() {
-    return stub(commons, "signToken").returns();
+    return stub(commons, "signToken").resolves();
 }
 
 function fileRef() {
