@@ -94,7 +94,7 @@ describe("Account manager tests", () => {
 
         // TESTS
         it("Should return 204 when user updated successfully", (done) => {
-            fixture("modifiableUser", { password: "SomePassword100209", email: "newemail@example.com"});
+            fixture("modifiableUser", { username: "modifiableUser", password: "SomePassword100209", email: "newemail@example.com"});
             updateAccount(req, res);
 
             const assertDB = (err) => {
@@ -125,9 +125,9 @@ describe("Account manager tests", () => {
         });
 
         it("Should return 400 when duplicated key is found", (done) => {
-            fixture("modifiableUser", { username: "test" });
+            fixture("modifiableUser", { username: "modifiableUser", email: "" });
             updateAccount(req, res);
-            assertRequest(400, {message: "username: 'test' is duplicated, must be unique"}, done);
+            assertRequest(400, {message: "email: 'test@example.com' is duplicated, must be unique"}, done);
         });
     });
 
