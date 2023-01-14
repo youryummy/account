@@ -29,10 +29,11 @@ export async function signToken(req, res, payload) {
         logger.warn(err.message);
         return [] 
     });
-    data.eventIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "planner", onlyOpenOnInternalError: true}).fire("get", `http://planner/api/v1/events`).then((res) => res.data.filter((event) => event.account === data.username).map((event) => event._id)).catch((err) => {
-        logger.warn(err.message);
-        return [] 
-    });
+    /* Manually handled by planner service */
+    // data.eventIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "planner", onlyOpenOnInternalError: true}).fire("get", `http://planner/api/v1/events`).then((res) => res.data.filter((event) => event.account === data.username).map((event) => event._id)).catch((err) => {
+    //     logger.warn(err.message);
+    //     return [] 
+    // });
     data.recipeIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "recipes", onlyOpenOnInternalError: true}).fire("get", `http://recipes/api/v1/recipes`).then((res) => res.data.filter((recipe) => recipe.userId === data.username).map((recipe) => recipe._id)).catch((err) => {
         logger.warn(err.message);
         return [] 
