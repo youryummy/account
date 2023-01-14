@@ -3,7 +3,7 @@ import { strict as assert } from 'node:assert';
 import mocks from "../../mocks/index.js";
 
 // Auxiliar functions
-const req = {}, res = {}, mocklist = []; 
+const req = {}, res = {setHeader: () => {}}, mocklist = []; 
 const assertRequest = (expectedCode, expectedData, done) => {
     res.send = (data) => { 
         try {
@@ -173,7 +173,7 @@ describe("Account manager tests", () => {
 
         // TESTS
         it("Should return 204 when user is deleted successfully", (done) => {
-            fixture("test", { username: "test" });
+            fixture("test", { username: "test", delete: () => {} });
             deleteAccount(req, res);
             assertRequest(204, undefined, done);
         });

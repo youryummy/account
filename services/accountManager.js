@@ -74,7 +74,7 @@ export function updateAccount(req, res) {
 
 export function deleteAccount(_req, res) {
     CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
-    .fire("findOneAndDelete", {username: res.locals.oas.params.username}).then((acc) => {
+    .fire("findOne", {username: res.locals.oas.params.username}).then((acc) => {
         if (acc) {
             CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true})
             .fire("get", `http://youryummy-recipesbook-service/api/v1/recipesbooks/findByUserId/${res.locals.oas.params.username}`)
@@ -83,6 +83,8 @@ export function deleteAccount(_req, res) {
                     return CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("delete", `http://youryummy-recipesbook-service/api/v1/recipesbooks/${book._id}`)
                 }) ?? []).then(() => {
                     serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
+                    acc.delete();
+                    res.setHeader('Set-Cookie', `authToken=; HttpOnly; Max-Age=0; Path=/`);
                     res.status(204).send();
                 }).catch((err) => {
                     res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message ?? "Unexpected error ocurred, please try again later" });
