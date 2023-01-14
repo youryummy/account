@@ -3,6 +3,7 @@ import { strict as assert } from 'node:assert';
 import mocks from '../../mocks/index.js';
 
 export default () => {
+    let breaker;
     const res = { headers: {} }, req = { headers: {}};
     describe("JWT token signtature tests", () => {
         const payload = { username: "test", plan: "test", role: "test", userId: "test" };
@@ -12,6 +13,7 @@ export default () => {
 
         before(() => {
             res.setHeader = (key, val) => res.headers[key] = val;
+            breaker = mocks.circuitBreaker().fire("get", []);
         });
 
         beforeEach(() => {
@@ -22,6 +24,7 @@ export default () => {
         after(() => {
             delete process.env.JWT_SECRET;
             delete process.env.JWT_ISSUER;
+            breaker.restore();
         });
 
         it("Should sign the token and write Set-Cookie header", (done) => {
@@ -37,14 +40,14 @@ export default () => {
         });
 
         it("Should update the token in case that a previous one existed", (done) => {
-            const updatedPayload = { username: "updatedUser", plan: "updatedPlan", role: "updatedRole" }
+            const updatedPayload = { username: "test", plan: "updatedPlan", role: "updatedRole" }
             req.headers.cookie = `tokenString`; // Decode function is mocked, no need to specify full string
 
             let decodeMock = mocks.jwtDecode(payload);
             let signMock = mocks.jwtSign("newToken");
 
             signToken(req, res, updatedPayload).then(() => {
-                assert.equal(signMock.calledWith({...updatedPayload, userId: "updatedUser", ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: [], eventIds: [] }, secret, {issuer, expiresIn: '24h'}), true);
+                assert.equal(signMock.calledWith({...updatedPayload, userId: "test", ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: [], eventIds: [] }, secret, {issuer, expiresIn: '24h'}), true);
                 assert.deepStrictEqual(res.headers, { 'Set-Cookie': 'authToken=newToken; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost' });
                 done();
             }).catch(err => done(err))

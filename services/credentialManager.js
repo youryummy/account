@@ -38,7 +38,7 @@ export function register(req, res) {
         plan: "base"
     })
     .then((acc) => {
-        CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true})
+        CircuitBreaker.getBreaker(axios, res, {nameOverride: "recipebooks", onlyOpenOnInternalError: true})
         .fire("post", 'http://youryummy-recipesbook-service/api/v1/recipesbooks', {
             idUser: acc.username,
             name: "My recipes",

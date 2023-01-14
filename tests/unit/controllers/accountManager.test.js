@@ -125,9 +125,15 @@ describe("Account manager tests", () => {
 
         // TESTS
         it("Should return 204 when user updated successfully", (done) => {
-            fixture("oldTest", { username: "test" }, { username: "oldTest" });
+            fixture("oldTest", { username: "test" }, { username: "test" });
             updateAccount(req, res);
             assertRequest(204, undefined, done);
+        });
+
+        it("Should return 400 when attempt to modify username", (done) => {
+            fixture("oldTest", { username: "test" }, { username: "oldTest" });
+            updateAccount(req, res);
+            assertRequest(400, {message: "Username cannot be modified"}, done);
         });
 
         it("Should return 404 when user does not exist", (done) => {
