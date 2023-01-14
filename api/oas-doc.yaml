@@ -257,7 +257,7 @@ components:
             readOnly: true
           plan:
             type: string
-            enum: [base, premium]
+            enum: [base, advanced, premium]
             readOnly: true
     error:
       type: object

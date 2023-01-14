@@ -51,7 +51,7 @@ const AccountSchema = new Schema(
         plan: {
             type: String,
             required: true,
-            enum: ['base', 'premium']
+            enum: ['base', 'advanced', 'premium']
         }
     }
 )
