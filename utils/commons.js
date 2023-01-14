@@ -16,11 +16,11 @@ export async function signToken(req, res, payload) {
     
     //Add attributes from other services to data
     data.userId = data.username;
-    data.ingredientsIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://youryummy-ingredients-service/api/v1/ingredients`).then((res) => res.data.map((ing) => ing.creado_por).filter((acc) => acc === data.username)).catch(() => []);
-    data.recipebookIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://youryummy-recipesbook-service/api/v1/recipesbooks/findByUserId/${data.username}`).then((res) => res.data.map((rb) => rb.idUser)).catch(() => []);
-    data.ratingIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://youryummy-ratings-service/api/v1/ratings/findByUserId/${data.username}`).then((res) => res.data.map((rating) => rating.idUser)).catch(() => []);
-    data.eventIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://planner/api/v1/events`).then((res) => res.data.map((event) => event.account).filter((acc) => acc === data.username)).catch(() => []);
-    data.recipeIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://recipes/api/v1/recipes`).then((res) => res.data.map((recipe) => recipe.userId).filter((acc) => acc === data.username)).catch(() => []);
+    data.ingredientsIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://youryummy-ingredients-service/api/v1/ingredients`).then((res) => res.data.filter((ing) => ing.creado_por === data.username).map((ing) => ing._id)).catch(() => []);
+    data.recipebookIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://youryummy-recipesbook-service/api/v1/recipesbooks/findByUserId/${data.username}`).then((res) => res.data.map((rb) => rb._id)).catch(() => []);
+    data.ratingIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://youryummy-ratings-service/api/v1/ratings/findByUserId/${data.username}`).then((res) => res.data.map((rating) => rating._id)).catch(() => []);
+    data.eventIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://planner/api/v1/events`).then((res) => res.data.filter((event) => event.account === data.username).map((event) => event._id)).catch(() => []);
+    data.recipeIds = await CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("get", `http://recipes/api/v1/recipes`).then((res) => res.data.filter((recipe) => recipe.userId === data.username).map((recipe) => recipe._id)).catch(() => []);
 
     const newToken = jwt.sign(data, secret, {issuer: issuer, expiresIn: '24h' });
     
