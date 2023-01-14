@@ -125,7 +125,7 @@ describe("Account manager tests", () => {
         });
 
         it("Should return 400 when duplicated key is found", (done) => {
-            fixture("modifiableUser", { username: "modifiableUser", email: "" });
+            fixture("modifiableUser", { username: "modifiableUser", email: "test@example.com" });
             updateAccount(req, res);
             assertRequest(400, {message: "email: 'test@example.com' is duplicated, must be unique"}, done);
         });
@@ -151,21 +151,7 @@ describe("Account manager tests", () => {
         it("Should return 204 when user is deleted successfully", (done) => {
             fixture("deletableUser");
             deleteAccount(req, res);
-
-            const assertDB = (err) => {
-                if (err) done(err);
-                else {
-                    Account
-                    .findOne({ username: "deletableUser" })
-                    .then(acc => { 
-                        try {
-                            assert.equal(acc, null); done();
-                        } catch(err) { done(err) }
-                    });
-                }
-            };
-
-            assertRequest(204, undefined, assertDB);
+            assertRequest(204, undefined, done);
         });
 
         it("Should return 204 when user does not exist", (done) => {

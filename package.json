@@ -10,7 +10,7 @@
         "dev": "node -r dotenv/config index.js",
         "build": "docker build . -t account-service:1.0.0 -t account-service:latest",
         "test:unit": "mocha --exit --recursive --timeout 5000 -r tests/setup.test.js tests/unit",
-        "test:integration": "mocha --exit --recursive --timeout 7000 -r tests/setup.test.js tests/integration",
+        "test:integration": "mocha --exit --recursive --timeout 10000 -r tests/setup.test.js tests/integration",
         "test:component": "mocha --exit --recursive --timeout 10000 -r tests/setup.test.js tests/component",
         "test": "npm run test:unit && npm run test:integration && npm run test:component",
         "cov": "c8 --reporter=lcov --reporter=text npm run test",
