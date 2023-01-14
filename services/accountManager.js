@@ -54,6 +54,8 @@ export function updateAccount(req, res) {
     .then((oldAcc) => {
         if (!oldAcc) {
             res.status(404).send({message: `Account with username '${res.locals.oas.params.username}' does not exist`});
+        } else if (oldAcc.username !== update.username) {
+            res.status(400).send({message: "Username cannot be modified"});
         } else {
             serverExports.fileRef(oldAcc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
             commons.signToken(req, res, update).then(() => res.status(204).send());           
@@ -76,11 +78,11 @@ export function deleteAccount(_req, res) {
     CircuitBreaker.getBreaker(Account, res, {onlyOpenOnInternalError: true})
     .fire("findOne", {username: res.locals.oas.params.username}).then((acc) => {
         if (acc) {
-            CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true})
+            CircuitBreaker.getBreaker(axios, res, {nameOverride: "recipebooks", onlyOpenOnInternalError: true})
             .fire("get", `http://youryummy-recipesbook-service/api/v1/recipesbooks/findByUserId/${res.locals.oas.params.username}`)
             .then((rbresponse) => {
                 Promise.all(rbresponse.data?.map((book) => {
-                    return CircuitBreaker.getBreaker(axios, res, {onlyOpenOnInternalError: true}).fire("delete", `http://youryummy-recipesbook-service/api/v1/recipesbooks/${book._id}`)
+                    return CircuitBreaker.getBreaker(axios, res, {nameOverride: "recipebooks", onlyOpenOnInternalError: true}).fire("delete", `http://youryummy-recipesbook-service/api/v1/recipesbooks/${book._id}`)
                 }) ?? []).then(() => {
                     serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
                     acc.delete();

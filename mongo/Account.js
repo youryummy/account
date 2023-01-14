@@ -5,7 +5,8 @@ const AccountSchema = new Schema(
         username: {
             type: String,
             unique: true,
-            required: true
+            required: true,
+            immutable: true,
         },
         password: {
             type: String,
