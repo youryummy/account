@@ -42,7 +42,7 @@ export async function signToken(req, res, payload) {
 
     const newToken = jwt.sign(data, secret, {issuer: issuer, expiresIn: '24h' });
     
-    res.setHeader('Set-Cookie', `authToken=${newToken}; HttpOnly; ${secure} Max-Age=${60 * 60 * 24}; Path=/; Domain=${domain}`);
+    res.setHeader('Set-Cookie', `authToken=${newToken}; HttpOnly; ${secure} Max-Age=${60 * 60 * 24}; Path=/; Domain=${domain}; SameSite=None`);
 }
 
 export default { signToken };
