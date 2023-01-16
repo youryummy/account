@@ -13,7 +13,7 @@ export default () => {
 
         before(() => {
             res.setHeader = (key, val) => res.headers[key] = val;
-            breaker = mocks.circuitBreaker().fire("get", []);
+            breaker = mocks.circuitBreaker().fire("get", {data: {result: []}});
         });
 
         beforeEach(() => {
@@ -31,7 +31,7 @@ export default () => {
             let signMock = mocks.jwtSign(token, payload);
             
             signToken(req, res, payload).then(() => {
-                assert.equal(signMock.calledWith({...payload, ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: [] }, secret, {issuer, expiresIn: '24h'}), true);
+                assert.equal(signMock.calledWith({...payload, ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: {result: []} }, secret, {issuer, expiresIn: '24h'}), true);
                 assert.deepStrictEqual(res.headers, { 'Set-Cookie': `authToken=${token}; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost` });
                 done();
             }).catch(err => done(err))
@@ -47,7 +47,7 @@ export default () => {
             let signMock = mocks.jwtSign("newToken");
 
             signToken(req, res, updatedPayload).then(() => {
-                assert.equal(signMock.calledWith({...updatedPayload, userId: "test", ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: [] }, secret, {issuer, expiresIn: '24h'}), true);
+                assert.equal(signMock.calledWith({...updatedPayload, userId: "test", ingredientsIds: [], recipeIds: [], recipebookIds: [], ratingIds: {result: []} }, secret, {issuer, expiresIn: '24h'}), true);
                 assert.deepStrictEqual(res.headers, { 'Set-Cookie': 'authToken=newToken; HttpOnly; Secure; Max-Age=86400; Path=/; Domain=localhost' });
                 done();
             }).catch(err => done(err))
