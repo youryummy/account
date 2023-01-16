@@ -86,7 +86,7 @@ export function deleteAccount(_req, res) {
                 }) ?? []).then(() => {
                     serverExports.fileRef(acc)?.delete().catch((err) => logger.warn(`Couldn't delete firebase file: ${err}`));
                     acc.delete();
-                    res.setHeader('Set-Cookie', `authToken=; HttpOnly; Max-Age=0; Path=/`);
+                    res.setHeader('Set-Cookie', `authToken=; HttpOnly; Max-Age=0; Path=/; Domain=${process.env.COOKIE_DOMAIN ?? "localhost"}`);
                     res.status(204).send();
                 }).catch((err) => {
                     res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message ?? "Unexpected error ocurred, please try again later" });

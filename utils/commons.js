@@ -25,7 +25,7 @@ export async function signToken(req, res, payload) {
         logger.warn(err.message);
         return [] 
     });
-    data.ratingIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "ratings", onlyOpenOnInternalError: true}).fire("get", `http://youryummy-ratings-service/api/v1/ratings/findByUserId/${data.username}`).then((res) => res.data.map((rating) => rating._id)).catch((err) => {
+    data.ratingIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "ratings", onlyOpenOnInternalError: true}).fire("get", `http://youryummy-ratings-service/api/v1/ratings/findByUserId/${data.username}`).then((res) => res.data).catch((err) => {
         logger.warn(err.message);
         return [] 
     });
