@@ -4,6 +4,7 @@ import commons from "../utils/commons.js";
 import Account from "../mongo/Account.js";
 import bcrypt from "bcrypt";
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 export function login(req, res) {
     const { username, password } = res.locals.oas.body;
@@ -65,5 +66,24 @@ export function register(req, res) {
             res.status(500).send({ message: "Unexpected error ocurred, please try again later" });
         }
     });
+}
+
+export function refreshToken(req, res) {
+    const token = res.locals.oas.body.token;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET, { issuer: process.env.JWT_ISSUER});
+        commons.signToken(req, res, {
+            username: decoded.username,
+            role: decoded.role,
+            plan: decoded.plan
+        }).then(() => {
+            res.status(201).send();
+        }).catch((err) => {
+            res.status(500).send({ message: `Could not refresh token: ${err.message}`})
+        });
+    } catch(err) {
+        logger.warn("Could not refresh token: " + err.message)
+        res.status(400).send({ message: "Invalid token" });
+    }
 }
 

@@ -13,6 +13,7 @@ export class OASSwagger extends OASBase {
     static initialize(oasFile, config) {
       const swaggerFile = OASSwagger.#filterPaths(oasFile, config.endpoints);
       return new OASSwagger(config, oasFile, (req, _res, next) => {
+        req.notFilteredDoc = oasFile;
         req.swaggerDoc = swaggerFile;
         req.swaggerDoc.paths = Object.fromEntries(
           Object.entries(swaggerFile.paths).map(([endp, val]) => {
@@ -25,7 +26,7 @@ export class OASSwagger extends OASBase {
 
     /* Overridden */
     register(app) {
-      app.get(`${this.#config.path}/swagger.json`, super.getMiddleware(), (req, res) => res.json(req.swaggerDoc));
+      app.get(`${this.#config.path}/swagger.json`, super.getMiddleware(), (req, res) => res.json(req.notFilteredDoc));
       app.use(this.#config.path, super.getMiddleware(), swaggerUI.serve, swaggerUI.setup(null, this.#config.ui));
     }
 

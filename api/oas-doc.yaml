@@ -78,6 +78,39 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/error'
+  /api/v1/refreshToken:
+    x-router-controller: credentialManager
+    post:
+      x-swagger-ui: false
+      description: Refreshes the access token
+      tags: ["User Access"]
+      operationId: refreshToken
+      requestBody:
+        description: Token to refresh
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        201: 
+          description: Token refreshed
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          
 
   # ACCOUNT MANAGEMENT
   /api/v1/accounts:
