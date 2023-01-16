@@ -35,7 +35,7 @@ export async function signToken(req, res, payload) {
     //     logger.warn(err.message);
     //     return [] 
     // });
-    data.recipeIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "recipes", onlyOpenOnInternalError: true}).fire("get", `http://recipes/api/v1/recipes`).then((res) => res.data.filter((recipe) => recipe.userId === data.username).map((recipe) => recipe._id)).catch((err) => {
+    data.recipeIds = await CircuitBreaker.getBreaker(axios, res, {nameOverride: "recipes", onlyOpenOnInternalError: true}).fire("get", `http://recipes/api/v1/recipes`).then((res) => res.data.filter((recipe) => recipe.createdBy === data.username).map((recipe) => recipe._id)).catch((err) => {
         logger.warn(err.message);
         return [] 
     });
