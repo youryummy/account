@@ -107,7 +107,7 @@ jobs:
         - name: Okteto Deploy
           uses: okteto/pipeline@latest
           with:
-            name: account-service
+            name: account
             namespace: youryummy-maribelrb22
             variables: >-
               NODE_ENV=production,
@@ -116,5 +116,5 @@ jobs:
               MONGO_HOST=cluster0.2n6tvhy.mongodb.net,
               MONGO_USER=YourYummy,
               MONGO_DBNAME=accounts,
-              COOKIE_DOMAIN=cloud.okteto.net,
+              COOKIE_DOMAIN=.cloud.okteto.net,
               FIREBASE_BUCKET=your-yummy.appspot.com,
