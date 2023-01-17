@@ -1,7 +1,3 @@
-## [1.0.1](https://github.com/youryummy/account/compare/v1.0.0...v1.0.1) (2023-01-17)
-
-
-
 # [1.0.0](https://github.com/youryummy/account/compare/f4eda95876f9209de4f99df10d2d54455fe09b05...v1.0.0) (2023-01-17)
 
 
