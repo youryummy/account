@@ -1,40 +1,41 @@
 {
-    "name": "account-service",
-    "description": "YourYummy account manager service",
-    "license": "UNLICENSED",
-    "type": "module",
-    "private": true,
-    "main": "index.js",
-    "scripts": {
-        "start": "node index.js",
-        "dev": "node -r dotenv/config index.js",
-        "build": "docker build . -t account-service:1.0.0 -t account-service:latest",
-        "test:unit": "mocha --exit --recursive --timeout 5000 -r tests/setup.test.js tests/unit",
-        "test:integration": "mocha --exit --recursive --timeout 10000 -r tests/setup.test.js tests/integration",
-        "test:component": "mocha --exit --recursive --timeout 10000 -r tests/setup.test.js tests/component",
-        "test": "npm run test:unit && npm run test:integration && npm run test:component",
-        "cov": "c8 --reporter=lcov --reporter=text npm run test",
-        "lint": "eslint ./ --ignore-pattern \"tests/**\"",
-        "format": "npm run lint -- --fix"
-    },
-    "dependencies": {
-        "@oas-tools/core": "^3.0.0",
-        "axios": "^1.2.2",
-        "bcrypt": "^5.1.0",
-        "express": "^4.18.0",
-        "jsonwebtoken": "^8.5.1",
-        "lodash": "^4.17.21",
-        "mongoose": "^6.8.0",
-        "multer": "^1.4.5-lts.1",
-        "multer-firebase-storage": "^4.1.2",
-        "opossum": "^7.0.1"
-    },
-    "devDependencies": {
-        "c8": "^7.12.0",
-        "dotenv": "^16.0.3",
-        "eslint": "^8.30.0",
-        "mocha": "^10.2.0",
-        "request": "^2.88.2",
-        "sinon": "^15.0.1"
-    }
+  "name": "account-service",
+  "description": "YourYummy account manager service",
+  "license": "UNLICENSED",
+  "type": "module",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node -r dotenv/config index.js",
+    "build": "docker build . -t account-service:1.0.0 -t account-service:latest",
+    "test:unit": "mocha --exit --recursive --timeout 5000 -r tests/setup.test.js tests/unit",
+    "test:integration": "mocha --exit --recursive --timeout 10000 -r tests/setup.test.js tests/integration",
+    "test:component": "mocha --exit --recursive --timeout 10000 -r tests/setup.test.js tests/component",
+    "test": "npm run test:unit && npm run test:integration && npm run test:component",
+    "cov": "c8 --reporter=lcov --reporter=text npm run test",
+    "lint": "eslint ./ --ignore-pattern \"tests/**\"",
+    "format": "npm run lint -- --fix"
+  },
+  "dependencies": {
+    "@oas-tools/core": "^3.0.0",
+    "axios": "^1.2.2",
+    "bcrypt": "^5.1.0",
+    "express": "^4.18.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.8.0",
+    "multer": "^1.4.5-lts.1",
+    "multer-firebase-storage": "^4.1.2",
+    "opossum": "^7.0.1"
+  },
+  "devDependencies": {
+    "c8": "^7.12.0",
+    "dotenv": "^16.0.3",
+    "eslint": "^8.30.0",
+    "mocha": "^10.2.0",
+    "request": "^2.88.2",
+    "sinon": "^15.0.1"
+  },
+  "version": "1.0.0"
 }
