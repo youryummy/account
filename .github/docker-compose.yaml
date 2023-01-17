@@ -1,0 +1,42 @@
+version: '2.0'
+services:
+
+  test-nginx:
+    container_name: test-nginx
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - test
+# ===============================================
+  youryummy-recipesbook-service:
+    container_name: youryummy-recipesbook-service
+    image: fis-recipebook-service
+    build: https://github.com/youryummy/recipe-book.git#develop
+    environment:
+      - PORT=80
+      - NODE_ENV=development
+      - MONGO_HOST=database
+      - MONGO_DBNAME=youryummy
+    networks:
+      - test
+    depends_on:
+      - database
+# ===============================================
+  database:
+    container_name: database
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - test
+# ===============================================
+networks:
+  test:
+    external: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.20.0/28

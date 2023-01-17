@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Accounts Service
+  description: YourYummy account manager service 
+
+paths:
+
+  # USER ACCESS
+  /api/v1/login:
+    post:
+      description: Login using an existing account
+      x-router-controller: credentialManager
+      operationId: login
+      tags: ["User Access"]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/credentials'
+        description: Account to be created
+        required: true
+      responses:
+        201:
+          description: Logged in successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/register:
+    post:
+      description: Creates a new account
+      x-router-controller: credentialManager
+      operationId: register
+      tags: ["User Access"]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - AccountInfo
+              properties:
+                AccountInfo:
+                  allOf:
+                    - $ref: '#/components/schemas/account'
+                    - required:
+                      - password
+                Avatar:
+                  type: string
+                  format: binary
+        description: Account to be created
+        required: true
+      responses:
+        201:
+          description: Account registered
+        400:
+          description: Bad request
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+        default:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+  /api/v1/refreshToken:
+    x-router-controller: credentialManager
+    post:
+      x-swagger-ui: false
+      description: Refreshes the access token
+      tags: ["User Access"]
+      operationId: refreshToken
+      requestBody:
+        description: Token to refresh
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        201: 
+          description: Token refreshed
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          
+
+  # ACCOUNT MANAGEMENT
+  /api/v1/accounts:
+    get:
+      security:
+        - apikey: []
+      x-router-controller: accountManager
+      description: Returns all accounts
+      operationId: getAccounts
+      tags: ["Accounts Management"]
+      responses:
+        200:
+          description: Account list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/account'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/accounts/{username}:
+    x-router-controller: accountManager
+    get:
+      security:
+        - apikey: []
+      description: Returns a single account by its username
+      operationId: findByusername
+      tags: ["Accounts Management"]
+      parameters:
+        - required: true
+          name: username
+          description: username of the account to fetch
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: Account found by username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/account'
+        404:
+          description: Not Found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      security:
+          - apikey: []
+      description: Update a account based on its username
+      operationId: updateAccount
+      tags: ["Accounts Management"]
+      parameters:
+        - required: true
+          name: username
+          description: username of the account to update
+          in: path
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - AccountInfo
+              properties:
+                AccountInfo:
+                  $ref: '#/components/schemas/account'
+                Avatar:
+                  type: string
+                  format: binary
+        description: Account to be created
+        required: true
+      responses:
+        204:
+          description: Account updated
+        404:
+          description: Not Found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      security:
+        - apikey: []
+      description: Deletes a single account based on its username
+      operationId: deleteAccount
+      tags: ["Accounts Management"]
+      parameters:
+        - required: true
+          name: username
+          description: username of the account to delete
+          in: path
+          schema:
+            type: string
+      responses:
+        204:
+          description: Account deleted
+        404:
+          description: Not Found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+components:
+  schemas:
+    credentials:
+        type: object
+        required:
+          - username
+          - password
+        properties:
+          username: 
+            type: string
+          password: 
+            type: string
+            format: password
+    account:
+        type: object
+        required:
+          - username
+          - fullName
+          - email
+        properties:
+          username:
+            type: string
+          password:
+            type: string
+            format: password
+            pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*-_])(?=.{8,})
+            writeOnly: true
+          fullName:
+            type: string
+          email:
+            type: string
+            format: email
+          cellPhone:
+            type: string
+            pattern: ^[\+]?[(]?[0-9]{0,3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$
+          birthDate:
+            type: string
+            format: date
+          avatar:
+            type: string
+            format: uri
+            readOnly: true
+          role:
+            type: string
+            enum: [user, admin]
+            readOnly: true
+          plan:
+            type: string
+            enum: [base, advanced, premium]
+            readOnly: true
+    error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+  securitySchemes:
+    apikey:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-acl-config: { $ref: ./acl-config.yaml }

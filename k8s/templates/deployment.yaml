@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: youryummy-{{ .Chart.Name }}
+  name: youryummy-{{ .Chart.Name }}
+  namespace: {{ if .Values.global.namespaceOverride }}{{.Values.global.namespaceOverride}}{{ else }}youryummy{{ end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: youryummy-{{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: youryummy-{{ .Chart.Name }}
+    spec:
+      containers:
+        - env:
+          - name: PORT
+            value: "80"
+          - name: COOKIE_DOMAIN
+            value: {{ (index .Values .Chart.Name).cookie_domain | default .Values.cookie_domain }} 
+          - name: MONGO_HOST
+            value: {{ (index .Values .Chart.Name).mongo_host | default .Values.mongo_host }}
+          - name: MONGO_PORT
+            value: "{{ (index .Values .Chart.Name).mongo_port | default .Values.mongo_port }}"
+          - name: MONGO_DBNAME
+            value: {{ (index .Values .Chart.Name).mongo_dbname | default .Values.mongo_dbname }}
+          - name: MONGO_USER
+            value: {{ (index .Values .Chart.Name).mongo_user | default .Values.mongo_user }}
+          - name: MONGO_PROTO
+            value: {{ (index .Values .Chart.Name).mongo_proto | default .Values.mongo_proto }}
+          {{- if (index .Values .Chart.Name).mongo_pwd}}
+          - name: MONGO_PWD
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: MONGO_PWD
+          {{- end}}
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: JWT_SECRET
+          - name: JWT_ISSUER
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: JWT_ISSUER
+          - name: FIREBASE_CREDENTIALS
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: FIREBASE_CREDENTIALS
+          - name: FIREBASE_BUCKET
+            value: {{ (index .Values .Chart.Name).firebase_bucket | default .Values.firebase_bucket }}
+
+          image: {{ (index .Values .Chart.Name).image | default .Values.image }}
+          imagePullPolicy: IfNotPresent
+          name: youryummy-{{ .Chart.Name }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: 300Mi
+            limits:
+              memory: 400Mi
+      securityContext: {}
