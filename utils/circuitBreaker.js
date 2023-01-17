@@ -20,13 +20,19 @@ export class CircuitBreaker extends OpossumCircuitBreaker {
         if (!breakers[name]) breakers[name] = new CircuitBreaker(object, {...opts});
 
         if (onlyOpenOnInternalError) {
-            breakers[name].once("open", () => {
-                res.status = (code) => {
-                    if (code !== 500) breakers[name].close();
-                    res.statusCode = code;
-                    return res;
-                }
-            })
+            // Find event listeners attached to the "open" event
+            const openEventListeners = breakers[name].listeners("open");
+
+            // Prevent memory leak
+            if (openEventListeners?.length > 0) {
+                breakers[name].once("open", () => {
+                    res.status = (code) => {
+                        if (code !== 500) breakers[name].close();
+                        res.statusCode = code;
+                        return res;
+                    }
+                })
+            }
         }
 
         return breakers[name];
